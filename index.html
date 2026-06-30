@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JMD BOOT HOUSE - Shop</title>
+    <title>JMD BOOT HOUSE - Myntra Style</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -200,6 +200,7 @@
             transform: scale(1.01);
         }
 
+        /* banner */
         .banner {
             padding: 14px 20px;
         }
@@ -213,6 +214,7 @@
         }
         .banner img:hover { transform: scale(1.01); }
 
+        /* categories */
         .categories {
             display: flex;
             gap: 10px;
@@ -246,6 +248,7 @@
             border-color: transparent;
         }
 
+        /* product grid */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -377,6 +380,7 @@
             background: linear-gradient(135deg, #ff3f6c, #ff6b8a);
         }
 
+        /* bottom nav */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -851,7 +855,10 @@
             return [
                 { id: 1, brand: "Nike", name: "Air Jordan Retro", category: "shoes", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500", price: 8999, oldPrice: 12999, rating: "4.8 ⭐", desc: "Premium leather sneakers" },
                 { id: 2, brand: "Adidas", name: "Ultraboost 5.0", category: "sports", image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=500", price: 6999, oldPrice: 9999, rating: "4.7 ⭐", desc: "Responsive Boost foam" },
-                { id: 3, brand: "Puma", name: "RS-X Sneakers", category: "shoes", image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500", price: 4999, oldPrice: 6999, rating: "4.5 ⭐", desc: "Retro-futuristic design" }
+                { id: 3, brand: "Puma", name: "RS-X Sneakers", category: "shoes", image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500", price: 4999, oldPrice: 6999, rating: "4.5 ⭐", desc: "Retro-futuristic design" },
+                { id: 4, brand: "Woodland", name: "Leather Boots", category: "men", image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=500", price: 7499, oldPrice: 10999, rating: "4.6 ⭐", desc: "Rugged leather boots" },
+                { id: 5, brand: "Bata", name: "Comfit Slip-On", category: "women", image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=500", price: 2999, oldPrice: 4999, rating: "4.2 ⭐", desc: "Everyday comfort" },
+                { id: 6, brand: "Lee Cooper", name: "Oxford Formal", category: "formal", image: "https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=500", price: 4599, oldPrice: 6999, rating: "4.4 ⭐", desc: "Classic formal shoes" },
             ];
         }
 
