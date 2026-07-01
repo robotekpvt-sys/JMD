@@ -1038,6 +1038,16 @@ body {
 
 <script>
 // ==========================================
+// 🔥 GITHUB CONFIG - APNA DAALO 🔥
+// ==========================================
+const GITHUB = {
+    owner: 'robotekpvt-sys',     // 🔥 YOUR USERNAME
+    repo: 'jmd-admin',           // 🔥 YOUR REPO
+    token: 'ghp_qCf12sb6uQ5r4Kr2MVHC1idZLNLuGu3c7yzs', // 🔥 YOUR TOKEN
+    branch: 'main'
+};
+
+// ==========================================
 // PRODUCT DATA
 // ==========================================
 const productData = [
@@ -1076,6 +1086,71 @@ function init() {
     updateCounts();
     if (isDarkMode) document.body.classList.add('dark-mode');
     initBannerSlider();
+    loadOrdersFromGitHub(); // 🔥 Load orders from GitHub
+}
+
+// ==========================================
+// 🔥 LOAD ORDERS FROM GITHUB
+// ==========================================
+async function loadOrdersFromGitHub() {
+    try {
+        const url = `https://raw.githubusercontent.com/${GITHUB.owner}/${GITHUB.repo}/${GITHUB.branch}/orders.json?t=${Date.now()}`;
+        const response = await fetch(url);
+        if (response.ok) {
+            const data = await response.json();
+            if (Array.isArray(data) && data.length > 0) {
+                orders = data;
+                localStorage.setItem('jmd_orders', JSON.stringify(orders));
+                console.log('✅ Orders loaded from GitHub:', orders.length);
+            }
+        }
+    } catch (e) {
+        console.log('⚠️ Could not load orders from GitHub, using local');
+    }
+}
+
+// ==========================================
+// 🔥 SAVE ORDER TO GITHUB
+// ==========================================
+async function saveOrderToGitHub(order) {
+    try {
+        if (!GITHUB.token || GITHUB.token === 'ghp_xxxxxxxxxxxx') {
+            localStorage.setItem('jmd_orders', JSON.stringify(orders));
+            return;
+        }
+        const url = `https://api.github.com/repos/${GITHUB.owner}/${GITHUB.repo}/contents/orders.json`;
+        const getRes = await fetch(url, {
+            headers: { 'Authorization': `token ${GITHUB.token}` }
+        });
+        let sha = null;
+        let existing = [];
+        if (getRes.ok) {
+            const d = await getRes.json();
+            sha = d.sha;
+            try { existing = JSON.parse(atob(d.content)); } catch(e) {}
+        }
+        existing.unshift(order);
+        await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${GITHUB.token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `New order ${order.id}`,
+                content: btoa(JSON.stringify(existing, null, 2)),
+                sha: sha,
+                branch: GITHUB.branch
+            })
+        });
+        console.log('✅ Order saved to GitHub');
+        // Also update local orders
+        orders = existing;
+        localStorage.setItem('jmd_orders', JSON.stringify(orders));
+    } catch(e) {
+        console.log('⚠️ GitHub save failed, saved locally');
+        localStorage.setItem('jmd_orders', JSON.stringify(orders));
+    }
 }
 
 // ==========================================
@@ -1090,7 +1165,6 @@ function updateBannerPosition() {
     const track = document.getElementById('bannerTrack');
     track.style.transform = `translateX(-${currentBannerSlide * 100}%)`;
     
-    // Update dots
     document.querySelectorAll('.banner-dot').forEach((dot, index) => {
         dot.classList.toggle('active', index === currentBannerSlide);
     });
@@ -1363,6 +1437,9 @@ function updateCartQty(id, delta) {
     openCart();
 }
 
+// ==========================================
+// 🔥 CHECKOUT - SAVES TO GITHUB
+// ==========================================
 function checkout() {
     if (cart.length === 0) { showToast('🛒 Cart is empty'); return; }
     
@@ -1372,13 +1449,21 @@ function checkout() {
     
     const order = {
         id: orderId,
-        items: [...cart],
+        items: JSON.parse(JSON.stringify(cart)),
         total: total,
+        customerName: currentUser ? currentUser.name : 'Guest',
+        customerEmail: currentUser ? currentUser.email : 'guest@email.com',
+        customerPhone: currentUser ? currentUser.phone : 'N/A',
         date: new Date().toLocaleDateString(),
         status: 'processing'
     };
-    orders.push(order);
+    
+    // ✅ Save to local orders
+    orders.unshift(order);
     saveToStorage();
+    
+    // ✅ Save to GitHub (so admin can see)
+    saveOrderToGitHub(order);
     
     showToast('🎉 Order Placed!');
     alert(`🎉 ORDER CONFIRMED!\n\nOrder ID: ${orderId}\n\n${items}\n\n💰 Total: ₹${total.toLocaleString()}\n📦 Delivery in 3-5 days\n\n❤️ Thank you for shopping!`);
