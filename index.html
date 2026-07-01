@@ -5,6 +5,77 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>JMD Boot House - Premium Footwear</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<!-- ========================================== -->
+<!-- 🔥 WEBVIEW FIX - SABSE IMPORTANT -->
+<!-- ========================================== -->
+<script>
+// 🔥 YEH FIX WebintoApp me LocalStorage enable karega
+(function() {
+    console.log('🔥 JMD Boot - WebView Fix Applied');
+    
+    // Fix 1: Agar localStorage nahi hai toh banao
+    if (typeof localStorage === 'undefined' || !localStorage.setItem) {
+        console.log('⚠️ localStorage not found, creating fallback');
+        window.localStorage = {
+            _data: {},
+            setItem: function(id, val) { 
+                this._data[id] = String(val); 
+                console.log('💾 Saved:', id);
+            },
+            getItem: function(id) { 
+                return this._data[id] || null; 
+            },
+            removeItem: function(id) { 
+                delete this._data[id]; 
+            },
+            clear: function() { 
+                this._data = {}; 
+            }
+        };
+        console.log('✅ localStorage fallback created');
+    }
+    
+    // Fix 2: Agar fetch nahi hai toh banao
+    if (typeof fetch === 'undefined') {
+        console.log('⚠️ fetch not found, creating fallback');
+        window.fetch = function(url) {
+            return new Promise(function(resolve, reject) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url);
+                xhr.onload = function() {
+                    resolve({
+                        ok: xhr.status === 200,
+                        status: xhr.status,
+                        json: function() { return Promise.resolve(JSON.parse(xhr.responseText)); },
+                        text: function() { return Promise.resolve(xhr.responseText); }
+                    });
+                };
+                xhr.onerror = function() { reject(new Error('Network error')); };
+                xhr.send();
+            });
+        };
+        console.log('✅ fetch fallback created');
+    }
+    
+    // Fix 3: Force save to localStorage
+    window.forceSaveOrder = function(order) {
+        try {
+            let orders = JSON.parse(localStorage.getItem('jmd_orders') || '[]');
+            orders.unshift(order);
+            localStorage.setItem('jmd_orders', JSON.stringify(orders));
+            console.log('✅ Order saved locally:', order.id);
+            return true;
+        } catch(e) {
+            console.log('❌ Save failed:', e);
+            return false;
+        }
+    };
+    
+    console.log('✅ All WebView fixes applied!');
+})();
+</script>
+
 <style>
 * {
     margin: 0;
@@ -926,7 +997,6 @@ body {
 <div class="banner-section">
     <div class="banner-slider" id="bannerSlider">
         <div class="banner-track" id="bannerTrack">
-            <!-- Slide 1 -->
             <div class="banner-slide">
                 <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop" alt="Banner 1">
                 <div class="overlay">
@@ -935,7 +1005,6 @@ body {
                     <button onclick="filterProducts('all')">SHOP NOW</button>
                 </div>
             </div>
-            <!-- Slide 2 -->
             <div class="banner-slide">
                 <img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?q=80&w=1200&auto=format&fit=crop" alt="Banner 2">
                 <div class="overlay">
@@ -944,7 +1013,6 @@ body {
                     <button onclick="filterProducts('boots')">EXPLORE</button>
                 </div>
             </div>
-            <!-- Slide 3 -->
             <div class="banner-slide">
                 <img src="https://images.unsplash.com/photo-1562183241-b937e95585b6?q=80&w=1200&auto=format&fit=crop" alt="Banner 3">
                 <div class="overlay">
@@ -954,12 +1022,8 @@ body {
                 </div>
             </div>
         </div>
-
-        <!-- Arrows -->
         <button class="banner-arrow prev" onclick="prevSlide()">‹</button>
         <button class="banner-arrow next" onclick="nextSlide()">›</button>
-
-        <!-- Dots -->
         <div class="banner-dots" id="bannerDots">
             <button class="banner-dot active" onclick="goToSlide(0)"></button>
             <button class="banner-dot" onclick="goToSlide(1)"></button>
@@ -1038,16 +1102,6 @@ body {
 
 <script>
 // ==========================================
-// 🔥 GITHUB CONFIG - APNA DAALO 🔥
-// ==========================================
-const GITHUB = {
-    owner: 'robotekpvt-sys',     // 🔥 YOUR USERNAME
-    repo: 'jmd-admin',           // 🔥 YOUR REPO
-    token: 'ghp_qCf12sb6uQ5r4Kr2MVHC1idZLNLuGu3c7yzs', // 🔥 YOUR TOKEN
-    branch: 'main'
-};
-
-// ==========================================
 // PRODUCT DATA
 // ==========================================
 const productData = [
@@ -1086,71 +1140,8 @@ function init() {
     updateCounts();
     if (isDarkMode) document.body.classList.add('dark-mode');
     initBannerSlider();
-    loadOrdersFromGitHub(); // 🔥 Load orders from GitHub
-}
-
-// ==========================================
-// 🔥 LOAD ORDERS FROM GITHUB
-// ==========================================
-async function loadOrdersFromGitHub() {
-    try {
-        const url = `https://raw.githubusercontent.com/${GITHUB.owner}/${GITHUB.repo}/${GITHUB.branch}/orders.json?t=${Date.now()}`;
-        const response = await fetch(url);
-        if (response.ok) {
-            const data = await response.json();
-            if (Array.isArray(data) && data.length > 0) {
-                orders = data;
-                localStorage.setItem('jmd_orders', JSON.stringify(orders));
-                console.log('✅ Orders loaded from GitHub:', orders.length);
-            }
-        }
-    } catch (e) {
-        console.log('⚠️ Could not load orders from GitHub, using local');
-    }
-}
-
-// ==========================================
-// 🔥 SAVE ORDER TO GITHUB
-// ==========================================
-async function saveOrderToGitHub(order) {
-    try {
-        if (!GITHUB.token || GITHUB.token === 'ghp_xxxxxxxxxxxx') {
-            localStorage.setItem('jmd_orders', JSON.stringify(orders));
-            return;
-        }
-        const url = `https://api.github.com/repos/${GITHUB.owner}/${GITHUB.repo}/contents/orders.json`;
-        const getRes = await fetch(url, {
-            headers: { 'Authorization': `token ${GITHUB.token}` }
-        });
-        let sha = null;
-        let existing = [];
-        if (getRes.ok) {
-            const d = await getRes.json();
-            sha = d.sha;
-            try { existing = JSON.parse(atob(d.content)); } catch(e) {}
-        }
-        existing.unshift(order);
-        await fetch(url, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `token ${GITHUB.token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: `New order ${order.id}`,
-                content: btoa(JSON.stringify(existing, null, 2)),
-                sha: sha,
-                branch: GITHUB.branch
-            })
-        });
-        console.log('✅ Order saved to GitHub');
-        // Also update local orders
-        orders = existing;
-        localStorage.setItem('jmd_orders', JSON.stringify(orders));
-    } catch(e) {
-        console.log('⚠️ GitHub save failed, saved locally');
-        localStorage.setItem('jmd_orders', JSON.stringify(orders));
-    }
+    console.log('✅ JMD Boot House Loaded!');
+    console.log('📱 LocalStorage:', localStorage.getItem('jmd_orders') ? '✅ Working' : '⚠️ Empty');
 }
 
 // ==========================================
@@ -1164,7 +1155,6 @@ function initBannerSlider() {
 function updateBannerPosition() {
     const track = document.getElementById('bannerTrack');
     track.style.transform = `translateX(-${currentBannerSlide * 100}%)`;
-    
     document.querySelectorAll('.banner-dot').forEach((dot, index) => {
         dot.classList.toggle('active', index === currentBannerSlide);
     });
@@ -1178,19 +1168,12 @@ function goToSlide(index) {
     resetBannerAutoSlide();
 }
 
-function nextSlide() {
-    goToSlide(currentBannerSlide + 1);
-}
-
-function prevSlide() {
-    goToSlide(currentBannerSlide - 1);
-}
+function nextSlide() { goToSlide(currentBannerSlide + 1); }
+function prevSlide() { goToSlide(currentBannerSlide - 1); }
 
 function startBannerAutoSlide() {
     if (bannerInterval) clearInterval(bannerInterval);
-    bannerInterval = setInterval(() => {
-        nextSlide();
-    }, 4000);
+    bannerInterval = setInterval(nextSlide, 4000);
 }
 
 function resetBannerAutoSlide() {
@@ -1271,7 +1254,7 @@ function renderProducts(filter = 'all', search = '') {
 }
 
 // ==========================================
-// FILTER
+// FILTER & SEARCH
 // ==========================================
 function filterProducts(category, el) {
     currentFilter = category;
@@ -1286,16 +1269,10 @@ function filterProducts(category, el) {
     closeModal();
 }
 
-// ==========================================
-// SEARCH
-// ==========================================
 function handleSearch(query) {
     renderProducts(currentFilter, query);
 }
 
-// ==========================================
-// SORT
-// ==========================================
 function sortProducts(type) {
     if (type === 'popular') {
         products.sort((a, b) => b.rating - a.rating);
@@ -1438,14 +1415,13 @@ function updateCartQty(id, delta) {
 }
 
 // ==========================================
-// 🔥 CHECKOUT - SAVES TO GITHUB
+// 🔥 CHECKOUT - SAVES TO LOCALSTORAGE + GITHUB
 // ==========================================
 function checkout() {
     if (cart.length === 0) { showToast('🛒 Cart is empty'); return; }
     
     const total = cart.reduce((sum, c) => sum + (c.price * c.qty), 0);
     const orderId = 'ORD' + Date.now().toString().slice(-8);
-    const items = cart.map(c => `${c.brand} ${c.name} × ${c.qty}`).join('\n');
     
     const order = {
         id: orderId,
@@ -1458,21 +1434,77 @@ function checkout() {
         status: 'processing'
     };
     
-    // ✅ Save to local orders
-    orders.unshift(order);
-    saveToStorage();
+    // ✅ SAVE TO LOCALSTORAGE (Force save)
+    try {
+        let existingOrders = JSON.parse(localStorage.getItem('jmd_orders') || '[]');
+        existingOrders.unshift(order);
+        localStorage.setItem('jmd_orders', JSON.stringify(existingOrders));
+        orders = existingOrders;
+        console.log('✅ Order saved to LocalStorage:', orderId);
+    } catch(e) {
+        console.log('❌ LocalStorage save failed:', e);
+        // Fallback: memory storage
+        orders.unshift(order);
+    }
     
-    // ✅ Save to GitHub (so admin can see)
+    // ✅ SAVE TO GITHUB
     saveOrderToGitHub(order);
     
+    // ✅ UPDATE UI
+    saveToStorage();
+    updateCounts();
+    
     showToast('🎉 Order Placed!');
-    alert(`🎉 ORDER CONFIRMED!\n\nOrder ID: ${orderId}\n\n${items}\n\n💰 Total: ₹${total.toLocaleString()}\n📦 Delivery in 3-5 days\n\n❤️ Thank you for shopping!`);
+    alert(`🎉 ORDER CONFIRMED!\n\nOrder ID: ${orderId}\n\nTotal: ₹${total.toLocaleString()}\n\n📦 Delivery in 3-5 days\n\n❤️ Thank you!`);
     
     cart = [];
-    updateCounts();
     saveToStorage();
+    updateCounts();
     closeModal();
     renderProducts(currentFilter);
+}
+
+// ==========================================
+// SAVE ORDER TO GITHUB
+// ==========================================
+async function saveOrderToGitHub(order) {
+    try {
+        const token = 'ghp_qCf12sb6uQ5r4Kr2MVHC1idZLNLuGu3c7yzs';
+        const url = 'https://api.github.com/repos/robotekpvt-sys/jmd-admin/contents/orders.json';
+        
+        // Get existing orders
+        const getRes = await fetch(url, {
+            headers: { 'Authorization': 'token ' + token }
+        });
+        let sha = null;
+        let existing = [];
+        if (getRes.ok) {
+            const d = await getRes.json();
+            sha = d.sha;
+            try { existing = JSON.parse(atob(d.content)); } catch(e) {}
+        }
+        
+        // Add new order
+        existing.unshift(order);
+        
+        // Save
+        await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Authorization': 'token ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: 'New order ' + order.id,
+                content: btoa(JSON.stringify(existing, null, 2)),
+                sha: sha,
+                branch: 'main'
+            })
+        });
+        console.log('✅ Order saved to GitHub:', order.id);
+    } catch(e) {
+        console.log('⚠️ GitHub save failed, saved locally only');
+    }
 }
 
 // ==========================================
@@ -1709,7 +1741,10 @@ function loadFromStorage() {
         if (darkMode === 'true') isDarkMode = true;
         
         updateCounts();
-    } catch (e) {}
+        console.log('✅ Data loaded from storage');
+    } catch (e) {
+        console.log('⚠️ Storage load error:', e);
+    }
 }
 
 // ==========================================
