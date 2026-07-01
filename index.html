@@ -6,58 +6,896 @@
 <title>JMD Boot House - Premium Footwear</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-/* ===== SAME CSS AS BEFORE - COPY FROM PREVIOUS CODE ===== */
-/* (All CSS remains same, no changes needed) */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
 
-/* ===== LOADING OVERLAY ===== */
-.loading-overlay {
+:root {
+    --bg-primary: #f8f9fa;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --text-primary: #111111;
+    --text-secondary: #666666;
+    --text-muted: #999999;
+    --border-color: #ececec;
+    --shadow-color: rgba(0,0,0,0.04);
+    --shadow-hover: rgba(0,0,0,0.08);
+    --input-bg: #f5f5f7;
+    --modal-bg: #ffffff;
+    --nav-bg: #ffffff;
+}
+
+body.dark-mode {
+    --bg-primary: #0a0a1a;
+    --bg-secondary: #12122a;
+    --bg-card: #1a1a3e;
+    --text-primary: #f0f0f0;
+    --text-secondary: #aaaaaa;
+    --text-muted: #666666;
+    --border-color: #2a2a4e;
+    --shadow-color: rgba(255,255,255,0.02);
+    --shadow-hover: rgba(255,255,255,0.05);
+    --input-bg: #1a1a3e;
+    --modal-bg: #12122a;
+    --nav-bg: #12122a;
+}
+
+body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    padding-bottom: 95px;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #ff3f6c, #ff6b8a); border-radius: 10px; }
+
+/* ===== HEADER ===== */
+.header {
+    padding: 16px 18px 12px;
+    background: var(--bg-secondary);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 20px var(--shadow-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    cursor: pointer;
+}
+
+.logo .jmd {
+    background: linear-gradient(135deg, #ff3f6c, #ff6b8a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.logo .boot {
+    background: linear-gradient(135deg, #ff6b00, #ffe600);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.icons {
+    display: flex;
+    gap: 18px;
+    font-size: 22px;
+    cursor: pointer;
+    align-items: center;
+}
+
+.icons > div {
+    position: relative;
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+
+.icons > div:hover {
+    transform: scale(1.1);
+}
+
+.badge-count {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background: #ff3f6c;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+}
+
+.dark-toggle {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    transition: transform 0.3s;
+    padding: 0;
+}
+
+.dark-toggle:hover {
+    transform: rotate(30deg);
+}
+
+.search {
+    height: 50px;
+    background: var(--input-bg);
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.search:focus-within {
+    background: var(--bg-secondary);
+    border-color: #ff3f6c;
+    box-shadow: 0 0 0 4px rgba(255,63,108,0.1);
+}
+
+.search .icon {
+    color: var(--text-muted);
+    font-size: 18px;
+}
+
+.search input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    margin-left: 12px;
+    font-weight: 400;
+    color: var(--text-primary);
+}
+
+.search input::placeholder {
+    color: var(--text-muted);
+}
+
+/* ===== BANNER SLIDER ===== */
+.banner-section {
+    padding: 0 18px;
+    margin: 16px 0;
+}
+
+.banner-slider {
+    position: relative;
+    border-radius: 28px;
+    overflow: hidden;
+    height: 200px;
+    box-shadow: 0 8px 30px var(--shadow-color);
+}
+
+.banner-track {
+    display: flex;
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+}
+
+.banner-slide {
+    min-width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.banner-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.banner-slide .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.75), rgba(0,0,0,0.15));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 30px;
+    color: #fff;
+}
+
+.banner-slide .overlay h1 {
+    font-size: 32px;
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+.banner-slide .overlay p {
+    font-size: 13px;
+    opacity: 0.85;
+    margin: 8px 0 16px;
+}
+
+.banner-slide .overlay button {
+    width: 150px;
+    height: 48px;
+    border: none;
+    border-radius: 40px;
+    background: #fff;
+    color: #111;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.banner-slide .overlay button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+
+/* Banner Dots */
+.banner-dots {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+}
+
+.banner-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.6);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s;
+    padding: 0;
+}
+
+.banner-dot.active {
+    background: #fff;
+    border-color: #fff;
+    width: 24px;
+    border-radius: 10px;
+}
+
+/* Banner Arrows */
+.banner-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(10px);
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.banner-arrow:hover {
+    background: rgba(255,255,255,0.4);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.banner-arrow.prev {
+    left: 10px;
+}
+
+.banner-arrow.next {
+    right: 10px;
+}
+
+/* ===== CATEGORIES ===== */
+.section-header {
+    padding: 24px 18px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.section-link {
+    font-size: 13px;
+    color: #ff3f6c;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.categories {
+    display: flex;
+    overflow-x: auto;
+    padding: 0 18px 12px;
+    gap: 16px;
+    scrollbar-width: none;
+}
+
+.categories::-webkit-scrollbar {
+    display: none;
+}
+
+.category {
+    min-width: 80px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.category:hover {
+    transform: translateY(-4px);
+}
+
+.category img {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 6px;
+    border: 3px solid transparent;
+    transition: all 0.3s;
+}
+
+.category.active img {
+    border-color: #ff3f6c;
+    box-shadow: 0 0 0 4px rgba(255,63,108,0.15);
+}
+
+.category p {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* ===== PRODUCT GRID ===== */
+.products {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 0 18px 20px;
+}
+
+.card {
+    background: var(--bg-card);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 15px var(--shadow-color);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px var(--shadow-hover);
+}
+
+.card-img {
+    position: relative;
+    overflow: hidden;
+}
+
+.card img {
+    width: 100%;
+    height: 230px;
+    object-fit: cover;
+    transition: transform 0.6s;
+}
+
+.card:hover img {
+    transform: scale(1.05);
+}
+
+.badge {
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    background: #111;
+    color: #fff;
+    padding: 4px 14px;
+    border-radius: 30px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    z-index: 2;
+}
+
+.badge.sale {
+    background: #ff3f6c;
+}
+.badge.new {
+    background: #00b894;
+}
+.badge.hot {
+    background: #f59e0b;
+}
+.badge.best {
+    background: #6c5ce7;
+}
+.badge.luxury {
+    background: #d4af37;
+}
+
+.wishlist-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 2;
+}
+
+.wishlist-btn:hover {
+    transform: scale(1.1);
+}
+
+.wishlist-btn.active {
+    background: #ff3f6c;
+    color: #fff;
+}
+
+.quick-add {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    padding: 20px 16px 14px;
+    transform: translateY(100%);
+    transition: transform 0.3s;
+}
+
+.card:hover .quick-add {
+    transform: translateY(0);
+}
+
+.quick-add button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 14px;
+    background: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.quick-add button:hover {
+    background: #ff3f6c;
+    color: #fff;
+}
+
+.info {
+    padding: 12px 14px 14px;
+}
+
+.brand {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.name {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #f59e0b;
+    margin-bottom: 6px;
+}
+
+.rating span {
+    color: var(--text-muted);
+    margin-left: 4px;
+}
+
+.price {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.new-price {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.old-price {
+    font-size: 12px;
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+.discount {
+    font-size: 11px;
+    font-weight: 600;
+    color: #ff3f6c;
+}
+
+/* ===== SIZE SELECTOR ===== */
+.size-selector {
+    display: flex;
+    gap: 6px;
+    padding: 8px 0 4px;
+}
+
+.size-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    background: transparent;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: var(--text-primary);
+}
+
+.size-btn:hover {
+    border-color: #111;
+}
+
+.size-btn.active {
+    border-color: #ff3f6c;
+    background: #ff3f6c;
+    color: #fff;
+}
+
+/* ===== TOAST ===== */
+.toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    padding: 14px 28px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 9999;
+    display: none;
+    animation: slideUp 0.4s ease;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.2);
+    border: 1px solid var(--border-color);
+}
+
+@keyframes slideUp {
+    from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--bg-primary);
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    z-index: 5000;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.modal-overlay.show {
+    display: flex;
+}
+
+.modal {
+    background: var(--modal-bg);
+    width: 100%;
+    max-width: 500px;
+    max-height: 85vh;
+    border-radius: 28px 28px 0 0;
+    padding: 24px 20px 30px;
+    overflow-y: auto;
+    animation: modalSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-top: 1px solid var(--border-color);
+}
+
+@keyframes modalSlide {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.modal-close {
+    position: sticky;
+    top: 0;
+    float: right;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-size: 22px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.modal-close:hover {
+    background: var(--border-color);
+    transform: rotate(90deg);
+}
+
+.modal input, .modal select {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    margin: 4px 0 12px;
+    font-size: 14px;
+    background: var(--input-bg);
+    color: var(--text-primary);
+}
+
+.modal input:focus, .modal select:focus {
+    outline: none;
+    border-color: #ff3f6c;
+    box-shadow: 0 0 0 4px rgba(255,63,108,0.1);
+}
+
+.modal label {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ff3f6c, #ff6b8a);
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(255,63,108,0.3);
+}
+
+.btn-secondary {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #ff3f6c;
+    border-radius: 14px;
+    background: transparent;
+    color: #ff3f6c;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.3s;
+}
+
+.btn-secondary:hover {
+    background: #ff3f6c;
+    color: #fff;
+}
+
+/* ===== PROFILE ===== */
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff3f6c, #ff6b8a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: #fff;
+    margin: 0 auto 12px;
+}
+
+.profile-menu {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.profile-menu-item {
+    padding: 14px;
+    border-radius: 14px;
+    background: var(--input-bg);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 1px solid var(--border-color);
+}
+
+.profile-menu-item:hover {
+    transform: translateY(-2px);
+    border-color: #ff3f6c;
+}
+
+.profile-menu-item .icon {
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+.profile-menu-item .label {
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* ===== ORDERS ===== */
+.order-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.order-status.delivered {
+    background: #00b89420;
+    color: #00b894;
+}
+.order-status.shipped {
+    background: #f59e0b20;
+    color: #f59e0b;
+}
+.order-status.processing {
+    background: #ff3f6c20;
+    color: #ff3f6c;
+}
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 78px;
+    background: var(--nav-bg);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    z-index: 1000;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-item {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: 99999;
-    transition: opacity 0.5s ease;
-}
-
-.loading-overlay.hide {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid var(--border-color);
-    border-top: 4px solid #ff3f6c;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.loading-text {
-    margin-top: 16px;
+    font-size: 9px;
     font-weight: 500;
-    color: var(--text-secondary);
+    color: var(--text-muted);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 4px 12px;
+    transition: all 0.3s;
+    position: relative;
+    min-width: 56px;
+}
+
+.nav-item.active {
+    color: #ff3f6c;
+}
+
+.nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 3px;
+    background: #ff3f6c;
+    border-radius: 10px;
+}
+
+.nav-item .icon {
+    font-size: 26px;
+    margin-bottom: 2px;
+    line-height: 1;
+}
+
+.nav-item span {
+    font-size: 9px;
+    letter-spacing: 0.3px;
+}
+
+.gesture-bar {
+    position: fixed;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 130px;
+    height: 5px;
+    background: var(--border-color);
+    border-radius: 50px;
+    z-index: 1001;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 380px) {
+    .banner-slider { height: 160px; }
+    .banner-slide .overlay h1 { font-size: 24px; }
+    .card img { height: 190px; }
+    .products { gap: 12px; }
+    .nav-item { min-width: 44px; padding: 4px 6px; }
+    .nav-item .icon { font-size: 22px; }
+}
+
+@media (min-width: 600px) {
+    .products { grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 0 30px 30px; }
+    .banner-slider { height: 280px; }
+}
+
+@media (min-width: 1024px) {
+    .products { grid-template-columns: repeat(4, 1fr); max-width: 1200px; margin: 0 auto; }
+    .banner-section, .categories, .section-header { max-width: 1200px; margin-left: auto; margin-right: auto; }
+    .banner-slider { height: 320px; }
 }
 </style>
 </head>
 <body>
-
-<!-- ===== LOADING OVERLAY ===== -->
-<div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">🔄 Loading Products...</div>
-</div>
 
 <!-- ===== HEADER ===== -->
 <div class="header">
@@ -200,21 +1038,29 @@
 
 <script>
 // ==========================================
-// 🔥 GOOGLE SHEET API URL - YAHAN APNI URL PASTE KARO 🔥
+// PRODUCT DATA
 // ==========================================
-const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbyZRKZmqlJjU3uU1mTelbBVEp5CtSAph1TnKVmQWI6lIN93Q8F48F_enqzfWmHEquro/exec";
+const productData = [
+    { id: 1, brand: "Nike", name: "Air Max Premium", category: "sneakers", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=900&auto=format&fit=crop", price: 3999, oldPrice: 7999, rating: 4.8, reviews: 245, badge: "NEW" },
+    { id: 2, brand: "Adidas", name: "Ultraboost Running", category: "running", image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?q=80&w=900&auto=format&fit=crop", price: 2499, oldPrice: 5999, rating: 4.7, reviews: 189, badge: "HOT" },
+    { id: 3, brand: "Puma", name: "Leather Boots", category: "boots", image: "https://images.unsplash.com/photo-1543508282-6319a3e2621f?q=80&w=900&auto=format&fit=crop", price: 4299, oldPrice: 8999, rating: 4.6, reviews: 132, badge: "TRENDING" },
+    { id: 4, brand: "Reebok", name: "Casual Classic", category: "casual", image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=900&auto=format&fit=crop", price: 2999, oldPrice: 6299, rating: 4.5, reviews: 98, badge: "SALE" },
+    { id: 5, brand: "Woodland", name: "Adventure Boots", category: "boots", image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?q=80&w=900&auto=format&fit=crop", price: 5499, oldPrice: 9999, rating: 4.9, reviews: 312, badge: "BEST" },
+    { id: 6, brand: "New Balance", name: "Fresh Foam", category: "running", image: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=900&auto=format&fit=crop", price: 3599, oldPrice: 6999, rating: 4.7, reviews: 167, badge: "NEW" },
+    { id: 7, brand: "Louis Vuitton", name: "Luxury Sneakers", category: "sneakers", image: "https://images.unsplash.com/photo-1562183241-b937e95585b6?q=80&w=900&auto=format&fit=crop", price: 8999, oldPrice: 14999, rating: 4.9, reviews: 89, badge: "LUXURY" },
+    { id: 8, brand: "Converse", name: "Chuck Taylor", category: "casual", image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?q=80&w=900&auto=format&fit=crop", price: 1999, oldPrice: 3999, rating: 4.4, reviews: 456, badge: "SALE" }
+];
 
 // ==========================================
 // STATE
 // ==========================================
-let products = [];
+let products = [...productData];
 let cart = [];
 let wishlist = [];
 let orders = [];
 let currentFilter = 'all';
 let currentUser = null;
 let isDarkMode = false;
-let isLoading = true;
 
 // ===== BANNER SLIDER STATE =====
 let currentBannerSlide = 0;
@@ -222,75 +1068,72 @@ let bannerInterval = null;
 const totalBannerSlides = 3;
 
 // ==========================================
-// FETCH PRODUCTS FROM GOOGLE SHEET
+// INIT
 // ==========================================
-async function fetchProducts() {
-    try {
-        showLoading(true);
-        
-        const response = await fetch(GOOGLE_SHEET_API);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (Array.isArray(data) && data.length > 0) {
-            products = data.map(item => ({
-                id: parseInt(item.id) || Math.random(),
-                brand: item.brand || 'Unknown',
-                name: item.name || 'Product',
-                category: item.category || 'all',
-                image: item.image || 'https://via.placeholder.com/300',
-                price: parseInt(item.price) || 0,
-                oldPrice: parseInt(item.oldPrice) || 0,
-                rating: parseFloat(item.rating) || 4.0,
-                reviews: parseInt(item.reviews) || 0,
-                badge: item.badge || 'NEW'
-            }));
-            
-            showToast('✅ ' + products.length + ' products loaded from Google Sheet!');
-        } else {
-            throw new Error('No data found in Google Sheet');
-        }
-        
-    } catch (error) {
-        console.error('❌ Error fetching from Google Sheet:', error);
-        showToast('⚠️ Using fallback products');
-        products = getFallbackProducts();
-    }
-    
-    showLoading(false);
+function init() {
+    loadFromStorage();
     renderProducts();
     updateCounts();
+    if (isDarkMode) document.body.classList.add('dark-mode');
     initBannerSlider();
 }
 
 // ==========================================
-// FALLBACK PRODUCTS (If Google Sheet fails)
+// BANNER SLIDER FUNCTIONS
 // ==========================================
-function getFallbackProducts() {
-    return [
-        { id: 1, brand: "Nike", name: "Air Max Premium", category: "sneakers", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=900&auto=format&fit=crop", price: 3999, oldPrice: 7999, rating: 4.8, reviews: 245, badge: "NEW" },
-        { id: 2, brand: "Adidas", name: "Ultraboost Running", category: "running", image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?q=80&w=900&auto=format&fit=crop", price: 2499, oldPrice: 5999, rating: 4.7, reviews: 189, badge: "HOT" },
-        { id: 3, brand: "Puma", name: "Leather Boots", category: "boots", image: "https://images.unsplash.com/photo-1543508282-6319a3e2621f?q=80&w=900&auto=format&fit=crop", price: 4299, oldPrice: 8999, rating: 4.6, reviews: 132, badge: "TRENDING" },
-        { id: 4, brand: "Reebok", name: "Casual Classic", category: "casual", image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=900&auto=format&fit=crop", price: 2999, oldPrice: 6299, rating: 4.5, reviews: 98, badge: "SALE" },
-        { id: 5, brand: "Woodland", name: "Adventure Boots", category: "boots", image: "https://images.unsplash.com/photo-1556905055-8f358a7a47b2?q=80&w=900&auto=format&fit=crop", price: 5499, oldPrice: 9999, rating: 4.9, reviews: 312, badge: "BEST" },
-        { id: 6, brand: "New Balance", name: "Fresh Foam", category: "running", image: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?q=80&w=900&auto=format&fit=crop", price: 3599, oldPrice: 6999, rating: 4.7, reviews: 167, badge: "NEW" }
-    ];
+function initBannerSlider() {
+    updateBannerPosition();
+    startBannerAutoSlide();
+}
+
+function updateBannerPosition() {
+    const track = document.getElementById('bannerTrack');
+    track.style.transform = `translateX(-${currentBannerSlide * 100}%)`;
+    
+    // Update dots
+    document.querySelectorAll('.banner-dot').forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentBannerSlide);
+    });
+}
+
+function goToSlide(index) {
+    if (index < 0) index = totalBannerSlides - 1;
+    if (index >= totalBannerSlides) index = 0;
+    currentBannerSlide = index;
+    updateBannerPosition();
+    resetBannerAutoSlide();
+}
+
+function nextSlide() {
+    goToSlide(currentBannerSlide + 1);
+}
+
+function prevSlide() {
+    goToSlide(currentBannerSlide - 1);
+}
+
+function startBannerAutoSlide() {
+    if (bannerInterval) clearInterval(bannerInterval);
+    bannerInterval = setInterval(() => {
+        nextSlide();
+    }, 4000);
+}
+
+function resetBannerAutoSlide() {
+    if (bannerInterval) {
+        clearInterval(bannerInterval);
+        startBannerAutoSlide();
+    }
 }
 
 // ==========================================
-// LOADING OVERLAY
+// DARK MODE
 // ==========================================
-function showLoading(show) {
-    const overlay = document.getElementById('loadingOverlay');
-    if (show) {
-        overlay.classList.remove('hide');
-    } else {
-        setTimeout(() => overlay.classList.add('hide'), 500);
-    }
+function toggleDarkMode() {
+    isDarkMode = !isDarkMode;
+    document.body.classList.toggle('dark-mode', isDarkMode);
+    document.querySelector('.dark-toggle').textContent = isDarkMode ? '☀️' : '🌙';
+    localStorage.setItem('jmd_darkmode', isDarkMode);
 }
 
 // ==========================================
@@ -305,8 +1148,8 @@ function renderProducts(filter = 'all', search = '') {
     if (search.trim()) {
         const s = search.toLowerCase();
         filtered = filtered.filter(p =>
-            (p.name || '').toLowerCase().includes(s) ||
-            (p.brand || '').toLowerCase().includes(s)
+            p.name.toLowerCase().includes(s) ||
+            p.brand.toLowerCase().includes(s)
         );
     }
 
@@ -323,17 +1166,17 @@ function renderProducts(filter = 'all', search = '') {
     filtered.forEach(p => {
         const inWishlist = wishlist.some(w => w.id === p.id);
         const discount = Math.round(((p.oldPrice - p.price) / p.oldPrice) * 100);
-        const badgeClass = (p.badge || 'new').toLowerCase();
+        const badgeClass = p.badge.toLowerCase();
 
         const card = document.createElement('div');
         card.className = 'card';
         card.innerHTML = `
             <div class="card-img">
-                <span class="badge ${badgeClass}">${p.badge || 'NEW'}</span>
+                <span class="badge ${badgeClass}">${p.badge}</span>
                 <button class="wishlist-btn ${inWishlist ? 'active' : ''}" onclick="event.stopPropagation(); toggleWishlist(${p.id})">
                     ${inWishlist ? '❤️' : '🤍'}
                 </button>
-                <img src="${p.image}" alt="${p.name}" onclick="openProductDetail(${p.id})" loading="lazy">
+                <img src="${p.image}" alt="${p.name}" onclick="openProductDetail(${p.id})">
                 <div class="quick-add">
                     <button onclick="event.stopPropagation(); addToCart(${p.id})">🛒 Add to Bag</button>
                 </div>
@@ -341,77 +1184,16 @@ function renderProducts(filter = 'all', search = '') {
             <div class="info" onclick="openProductDetail(${p.id})">
                 <div class="brand">${p.brand}</div>
                 <div class="name">${p.name}</div>
-                <div class="rating">⭐ ${p.rating || 4.0} <span>(${p.reviews || 0})</span></div>
+                <div class="rating">⭐ ${p.rating} <span>(${p.reviews})</span></div>
                 <div class="price">
-                    <span class="new-price">₹${(p.price || 0).toLocaleString()}</span>
-                    <span class="old-price">₹${(p.oldPrice || 0).toLocaleString()}</span>
+                    <span class="new-price">₹${p.price.toLocaleString()}</span>
+                    <span class="old-price">₹${p.oldPrice.toLocaleString()}</span>
                     <span class="discount">${discount}% OFF</span>
                 </div>
             </div>
         `;
         grid.appendChild(card);
     });
-}
-
-// ==========================================
-// BANNER SLIDER FUNCTIONS
-// ==========================================
-function initBannerSlider() {
-    updateBannerPosition();
-    startBannerAutoSlide();
-}
-
-function updateBannerPosition() {
-    const track = document.getElementById('bannerTrack');
-    track.style.transform = `translateX(-${currentBannerSlide * 100}%)`;
-    
-    document.querySelectorAll('.banner-dot').forEach((dot, index) => {
-        dot.classList.toggle('active', index === currentBannerSlide);
-    });
-}
-
-function goToSlide(index) {
-    if (index < 0) index = totalBannerSlides - 1;
-    if (index >= totalBannerSlides) index = 0;
-    currentBannerSlide = index;
-    updateBannerPosition();
-    resetBannerAutoSlide();
-}
-
-function nextSlide() { goToSlide(currentBannerSlide + 1); }
-function prevSlide() { goToSlide(currentBannerSlide - 1); }
-
-function startBannerAutoSlide() {
-    if (bannerInterval) clearInterval(bannerInterval);
-    bannerInterval = setInterval(() => nextSlide(), 4000);
-}
-
-function resetBannerAutoSlide() {
-    if (bannerInterval) {
-        clearInterval(bannerInterval);
-        startBannerAutoSlide();
-    }
-}
-
-// ==========================================
-// TOAST
-// ==========================================
-function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.style.display = 'block';
-    clearTimeout(t._timeout);
-    t._timeout = setTimeout(() => t.style.display = 'none', 3000);
-}
-
-// ==========================================
-// DARK MODE
-// ==========================================
-function toggleDarkMode() {
-    isDarkMode = !isDarkMode;
-    document.body.classList.toggle('dark-mode', isDarkMode);
-    document.querySelector('.dark-toggle').textContent = isDarkMode ? '☀️' : '🌙';
-    localStorage.setItem('jmd_darkmode', isDarkMode);
 }
 
 // ==========================================
@@ -430,16 +1212,33 @@ function filterProducts(category, el) {
     closeModal();
 }
 
+// ==========================================
+// SEARCH
+// ==========================================
 function handleSearch(query) {
     renderProducts(currentFilter, query);
 }
 
+// ==========================================
+// SORT
+// ==========================================
 function sortProducts(type) {
     if (type === 'popular') {
-        products.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        products.sort((a, b) => b.rating - a.rating);
     }
     renderProducts(currentFilter, document.getElementById('searchInput').value);
     showToast('⭐ Sorted by popularity');
+}
+
+// ==========================================
+// TOAST
+// ==========================================
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    clearTimeout(t._timeout);
+    t._timeout = setTimeout(() => t.style.display = 'none', 2200);
 }
 
 // ==========================================
@@ -467,7 +1266,10 @@ function openWishlist() {
         showToast('🤍 Wishlist is empty');
         return;
     }
-    let html = `<button class="modal-close" onclick="closeModal()">✕</button><h2 style="font-size:22px;margin:8px 0 16px;">🤍 My Wishlist (${wishlist.length})</h2>`;
+    let html = `
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <h2 style="font-size:22px;margin:8px 0 16px;">🤍 My Wishlist (${wishlist.length})</h2>
+    `;
     wishlist.forEach(p => {
         html += `
             <div style="display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--border-color);">
@@ -475,7 +1277,7 @@ function openWishlist() {
                 <div style="flex:1;">
                     <strong>${p.brand}</strong>
                     <div style="font-size:12px;color:var(--text-secondary);">${p.name}</div>
-                    <strong>₹${(p.price || 0).toLocaleString()}</strong>
+                    <strong>₹${p.price.toLocaleString()}</strong>
                 </div>
                 <button onclick="removeFromWishlist(${p.id})" style="background:#ff3f6c;color:#fff;border:none;padding:6px 14px;border-radius:10px;cursor:pointer;">✕</button>
             </div>
@@ -517,7 +1319,7 @@ function openCart() {
         showToast('🛒 Cart is empty');
         return;
     }
-    let total = cart.reduce((sum, c) => sum + ((c.price || 0) * c.qty), 0);
+    let total = cart.reduce((sum, c) => sum + (c.price * c.qty), 0);
     let html = `
         <button class="modal-close" onclick="closeModal()">✕</button>
         <h2 style="font-size:22px;margin:8px 0 16px;">🛒 My Bag (${cart.reduce((s,c) => s + c.qty, 0)})</h2>
@@ -529,7 +1331,7 @@ function openCart() {
                 <div style="flex:1;">
                     <strong>${c.brand}</strong>
                     <div style="font-size:12px;color:var(--text-secondary);">${c.name}</div>
-                    <strong>₹${(c.price || 0).toLocaleString()}</strong> × ${c.qty}
+                    <strong>₹${c.price.toLocaleString()}</strong> × ${c.qty}
                 </div>
                 <div style="display:flex;gap:8px;align-items:center;">
                     <button onclick="updateCartQty(${c.id}, -1)" style="width:30px;height:30px;border-radius:50%;border:1px solid var(--border-color);background:transparent;cursor:pointer;font-size:16px;">−</button>
@@ -564,7 +1366,7 @@ function updateCartQty(id, delta) {
 function checkout() {
     if (cart.length === 0) { showToast('🛒 Cart is empty'); return; }
     
-    const total = cart.reduce((sum, c) => sum + ((c.price || 0) * c.qty), 0);
+    const total = cart.reduce((sum, c) => sum + (c.price * c.qty), 0);
     const orderId = 'ORD' + Date.now().toString().slice(-8);
     const items = cart.map(c => `${c.brand} ${c.name} × ${c.qty}`).join('\n');
     
@@ -589,10 +1391,12 @@ function checkout() {
 }
 
 // ==========================================
-// PROFILE & AUTH
+// PROFILE
 // ==========================================
 function openProfile() {
-    let html = `<button class="modal-close" onclick="closeModal()">✕</button>`;
+    let html = `
+        <button class="modal-close" onclick="closeModal()">✕</button>
+    `;
     
     if (currentUser) {
         html += `
@@ -695,6 +1499,9 @@ function logoutUser() {
     closeModal();
 }
 
+// ==========================================
+// ORDERS
+// ==========================================
 function openOrders() {
     if (orders.length === 0) {
         showToast('📦 No orders yet');
@@ -783,13 +1590,16 @@ function closeModal() {
 }
 
 // ==========================================
-// COUNTS & STORAGE
+// COUNTS
 // ==========================================
 function updateCounts() {
     document.getElementById('wishlistCount').textContent = wishlist.length;
     document.getElementById('cartCount').textContent = cart.reduce((sum, c) => sum + c.qty, 0);
 }
 
+// ==========================================
+// STORAGE
+// ==========================================
 function saveToStorage() {
     try {
         localStorage.setItem('jmd_cart', JSON.stringify(cart));
@@ -827,17 +1637,6 @@ document.addEventListener('keydown', function(e) {
 // ==========================================
 // INIT
 // ==========================================
-async function init() {
-    loadFromStorage();
-    if (isDarkMode) document.body.classList.add('dark-mode');
-    
-    // Fetch products from Google Sheet
-    await fetchProducts();
-    
-    // Setup banner slider
-    initBannerSlider();
-}
-
 init();
 </script>
 </body>
